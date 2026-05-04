@@ -1,5 +1,16 @@
 # <img src="https://github.com/DomHudson/kredd/blob/main/frontend/public/favicon.png" height=48 /> Kredd
 
+This is a complete SaaS application that allows users to create their own AI-powered inbound filter for cold pitches, requests, and opportunities.
+
+Users describe the types of emails they receive, and Kredd generates a structured intake flow with relevant questions for senders to answer. Each submission is then scored, summarized, and ranked against the user’s criteria, helping them quickly identify the opportunities worth reviewing.
+
+Instead of forcing high-volume inbound through a normal email inbox, Kredd gives users a dedicated front door: a unique shareable link they can place in their bio, email signature, website, or social profiles. People can still reach them, but every pitch arrives in a consistent, structured format with AI-generated relevance analysis.
+
+Kredd is designed for anyone who receives more inbound than they can reasonably handle, including podcast hosts, literary agents, creators, investors, executives, advisors, recruiters, and other high-signal professionals. The goal is not to block opportunity, but to make good opportunities easier to find.
+
+<img src="https://github.com/DomHudson/kredd/blob/main/pictures/inbox.png?raw=true" height=1000 />
+
+
 ## How it works
 
 #### Step 1 - Describe what you're looking for
