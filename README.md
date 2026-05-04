@@ -61,7 +61,8 @@ The Kredd application requires a number of different services to run. Each one h
 | `migrate`  | One-off service that runs Django database migrations (`manage.py migrate`) to set up or update the database schema before the application starts.                                                      |
 | `api`      | Main Django backend service that exposes the application’s API, handles requests, and coordinates with the database, message broker, and object storage.                                               |
 | `worker`   | Background worker service that processes asynchronous jobs (i.e., via RabbitMQ), such as sending emails or handling long-running ML tasks.                                                                |
-| `nginx`    | Frontend web server that serves static assets and acts as a reverse proxy to the API service. In production (when `KREDD_CERTBOT_DOMAIN` is set), automatically obtains a Let's Encrypt certificate and serves traffic over HTTPS on port 443, redirecting HTTP. |
+| `nginx-public`    | Frontend web server that serves static assets and acts as a reverse proxy to the API service. In production (when `KREDD_CERTBOT_DOMAIN` is set), automatically obtains a Let's Encrypt certificate and serves traffic over HTTPS on port 443, redirecting HTTP. |
+| `nginx-spa` | Nginx, only visible on the internal network, that serves the single page React application. This is seperate to the public facing nginx instance, so that we can enable maintenance mode, dedeploy the SPA, and users don't hit internal server errors during redeployment. | 
 
 ## Development - Git Hooks
 First install [Ruff](https://docs.astral.sh/ruff/):
