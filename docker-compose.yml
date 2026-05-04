@@ -1,0 +1,153 @@
+services:
+  db:
+    image: mysql:9.6.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${KREDD_DB_NAME}
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_USER: ${KREDD_DB_USER}
+      MYSQL_PASSWORD: ${KREDD_DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${KREDD_DB_USER}", "-p${KREDD_DB_PASSWORD}"]
+      interval: 1s
+      timeout: 10s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:4-alpine
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${KREDD_MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${KREDD_MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 1s
+      timeout: 10s
+      retries: 20
+
+  migrate:
+    build: .
+    command: ["python", "manage.py", "migrate"]
+    restart: on-failure
+    environment:
+      KREDD_DJANGO_SECRET_KEY: ${KREDD_DJANGO_SECRET_KEY}
+      KREDD_DB_HOST: db
+      KREDD_DB_NAME: ${KREDD_DB_NAME}
+      KREDD_DB_USER: ${KREDD_DB_USER}
+      KREDD_DB_PASSWORD: ${KREDD_DB_PASSWORD}
+      KREDD_DB_PORT: 3306
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      DJANGO_SETTINGS_MODULE: kreddapp.settings
+      KREDD_CLAUDE_API_KEY: ${KREDD_CLAUDE_API_KEY}
+      KREDD_CLAUDE_MODEL: ${KREDD_CLAUDE_MODEL}
+      KREDD_DB_HOST: db
+      KREDD_DB_NAME: ${KREDD_DB_NAME}
+      KREDD_DB_PASSWORD: ${KREDD_DB_PASSWORD}
+      KREDD_DB_PORT: 3306
+      KREDD_DB_USER: ${KREDD_DB_USER}
+      KREDD_DJANGO_DEBUG: ${KREDD_DJANGO_DEBUG}
+      KREDD_DJANGO_SECRET_KEY: ${KREDD_DJANGO_SECRET_KEY}
+      KREDD_GMAIL_ADDRESS: ${KREDD_GMAIL_ADDRESS}
+      KREDD_GMAIL_APP_PASSWORD: ${KREDD_GMAIL_APP_PASSWORD}
+      KREDD_GMAIL_PORT: ${KREDD_GMAIL_PORT}
+      KREDD_GMAIL_SMTP_HOST: ${KREDD_GMAIL_SMTP_HOST}
+      KREDD_MAX_ATTACHMENT_BYTES: ${KREDD_MAX_ATTACHMENT_BYTES:-10485760}
+      KREDD_MINIO_ACCESS_KEY: ${KREDD_MINIO_ACCESS_KEY}
+      KREDD_MINIO_BUCKET: ${KREDD_MINIO_BUCKET}
+      KREDD_MINIO_ENDPOINT: http://minio:9000
+      KREDD_MINIO_SECRET_KEY: ${KREDD_MINIO_SECRET_KEY}
+      KREDD_RABBITMQ_URL: ${KREDD_RABBITMQ_URL}
+      KREDD_SEMANTIC_SIMILARITY_MODEL: ${KREDD_SEMANTIC_SIMILARITY_MODEL}
+      KREDD_SITE_URL: ${KREDD_SITE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      minio:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    build: .
+    restart: unless-stopped
+    command: ["bash", "worker.sh"]
+    environment:
+      DJANGO_SETTINGS_MODULE: kreddapp.settings
+      KREDD_CLAUDE_API_KEY: ${KREDD_CLAUDE_API_KEY}
+      KREDD_CLAUDE_MODEL: ${KREDD_CLAUDE_MODEL}
+      KREDD_DB_HOST: db
+      KREDD_DB_NAME: ${KREDD_DB_NAME}
+      KREDD_DB_PASSWORD: ${KREDD_DB_PASSWORD}
+      KREDD_DB_PORT: 3306
+      KREDD_DB_USER: ${KREDD_DB_USER}
+      KREDD_DJANGO_DEBUG: ${KREDD_DJANGO_DEBUG}
+      KREDD_DJANGO_SECRET_KEY: ${KREDD_DJANGO_SECRET_KEY}
+      KREDD_GMAIL_ADDRESS: ${KREDD_GMAIL_ADDRESS}
+      KREDD_GMAIL_APP_PASSWORD: ${KREDD_GMAIL_APP_PASSWORD}
+      KREDD_GMAIL_PORT: ${KREDD_GMAIL_PORT}
+      KREDD_GMAIL_SMTP_HOST: ${KREDD_GMAIL_SMTP_HOST}
+      KREDD_MAX_ATTACHMENT_BYTES: ${KREDD_MAX_ATTACHMENT_BYTES:-10485760}
+      KREDD_MINIO_ACCESS_KEY: ${KREDD_MINIO_ACCESS_KEY}
+      KREDD_MINIO_BUCKET: ${KREDD_MINIO_BUCKET}
+      KREDD_MINIO_ENDPOINT: http://minio:9000
+      KREDD_MINIO_SECRET_KEY: ${KREDD_MINIO_SECRET_KEY}
+      KREDD_RABBITMQ_URL: ${KREDD_RABBITMQ_URL}
+      KREDD_SEMANTIC_SIMILARITY_MODEL: ${KREDD_SEMANTIC_SIMILARITY_MODEL}
+      KREDD_SITE_URL: ${KREDD_SITE_URL}
+    volumes:
+      - ./ml_models:/app/ml_models:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      minio:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  nginx-spa:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.spa
+    restart: unless-stopped
+
+  nginx-public:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.public
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+    environment:
+      KREDD_CERTBOT_DOMAIN: ${KREDD_CERTBOT_DOMAIN:-}
+      KREDD_CERTBOT_EMAIL: ${KREDD_CERTBOT_EMAIL:-}
+    depends_on:
+      - api
+      - nginx-spa
+
+volumes:
+  db_data:
+  minio_data:
+  letsencrypt:

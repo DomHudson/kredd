@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "overall_assessment",
+    "rationale",
+    "relevance_score",
+    "completeness_score",
+    "credibility_score",
+    "followups"
+  ],
+  "properties": {
+    "overall_assessment": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "relevance_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "completeness_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "credibility_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "followups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

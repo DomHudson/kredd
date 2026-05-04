@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "Running Ruff checks..."
+
+ruff check . --fix
+ruff format .
+
+# If Ruff made changes, re-stage them
+git add -A
+
+echo "Running request.user lint check..."
+python3 lint_request_user.py app/ || exit 1
+
+echo "Pre-commit checks complete."

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:32px auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+
+    <div style="background:#6366f1;padding:24px 28px;">
+      <p style="margin:0;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);">New topic</p>
+      <h1 style="margin:6px 0 0;font-size:22px;font-weight:700;color:#ffffff;">{{ topic.name }}</h1>
+    </div>
+
+    <div style="padding:24px 28px;border-bottom:1px solid #f3f4f6;">
+      <h3 style="font-size:13px;font-weight:600;color:#111827;margin:0 0 12px;">Owner</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tr>
+          <td style="width:80px;color:#6b7280;padding:3px 0;vertical-align:top;">Name</td>
+          <td style="color:#111827;padding:3px 0;">{{ topic.user.first_name }} {{ topic.user.last_name }}</td>
+        </tr>
+        <tr>
+          <td style="color:#6b7280;padding:3px 0;vertical-align:top;">Email</td>
+          <td style="padding:3px 0;"><a href="mailto:{{ topic.user.email }}" style="color:#6366f1;">{{ topic.user.email }}</a></td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="padding:24px 28px;">
+      <h3 style="font-size:13px;font-weight:600;color:#111827;margin:0 0 12px;">Summary</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tr>
+          <td style="width:80px;color:#6b7280;padding:3px 0;vertical-align:top;">Topic</td>
+          <td style="padding:3px 0;"><span style="background:#eef2ff;color:#6366f1;font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;">{{ topic.name }}</span></td>
+        </tr>
+        {% if topic.submission_instructions %}
+        <tr>
+          <td style="color:#6b7280;padding:3px 0;vertical-align:top;">Instructions</td>
+          <td style="color:#111827;padding:3px 0;line-height:1.5;">{{ topic.submission_instructions }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+          <td style="color:#6b7280;padding:3px 0;vertical-align:top;">Questions</td>
+          <td style="padding:3px 0;"></td>
+        </tr>
+      </table>
+      {% if topic.question_set.all %}
+        <ul style="margin:6px 0 0;padding-left:18px;font-size:14px;">
+          {% for r in topic.question_set.all %}
+            <li style="color:#6b7280;margin:3px 0;"><span style="color:#111827;">{{ r.text }}</span></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p style="margin:6px 0 0;font-size:14px;color:#9ca3af;font-style:italic;">None added</p>
+      {% endif %}
+    </div>
+
+    <div style="padding:16px 28px;background:#f9fafb;border-top:1px solid #f3f4f6;">
+      <p style="margin:0;font-size:12px;color:#9ca3af;">Sent by <a href="{{site_url}}">Kredd</a></p>
+    </div>
+
+  </div>
+</body>
+</html>

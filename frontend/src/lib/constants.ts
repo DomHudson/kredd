@@ -1,0 +1,2 @@
+export const SCORE_GREEN_THRESHOLD = 70;
+export const SCORE_AMBER_THRESHOLD = 40;
