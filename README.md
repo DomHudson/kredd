@@ -12,40 +12,15 @@ Drop it in your LinkedIn, email signature, or website — anyone can pitch you t
 
 #### Step 3 - Review ranked submissions
 Every submission is scored, summarized, and surfaced with follow-up suggestions.
-<img src="https://github.com/DomHudson/kredd/blob/main/pictures/step-review-YI7VtQ66.png?raw=true" height=300 />
+
+<img src="https://github.com/DomHudson/kredd/blob/main/pictures/step-review-YI7VtQ66.png?raw=true" height=500 />
 
 
 ## Installation Instructions
 1. Install [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/)
-2. Create a `.env` file in the root directory of the repository. This is used to store deployment-specific environment variables. Populate it with the following:
-```
-KREDD_DB_NAME=kredd
-KREDD_DB_USER=kredd
-KREDD_DB_PASSWORD="add-a-long-password-here"
-KREDD_DJANGO_DEBUG=true
-KREDD_DJANGO_SECRET_KEY="add-a-different-long-password-here"
-KREDD_GMAIL_APP_PASSWORD="add-a-different-long-password-here"
-KREDD_GMAIL_SMTP_HOST=smtp.gmail.com
-KREDD_MINIO_ACCESS_KEY=kredd_minio
-KREDD_MINIO_SECRET_KEY="add-a-different-long-password-here"
-KREDD_MINIO_BUCKET=attachments
-KREDD_RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
-KREDD_SITE_URL=http://127.0.0.1
-```
+2. Create a `.env` file in the root directory of the repository. This is used to store deployment-specific environment variables. Populate it with the environment variables from the below table.
 3. Start all services with `docker compose up`. If you've made code changes, make sure to include the `--build` parameter.
-
 4. Visit `http://localhost` for a local installation of Kredd.
-
-## Development - Git Hooks
-First install [Ruff](https://docs.astral.sh/ruff/):
-```bash
-sudo snap install ruff
-```
-
-Then, configure git to use the `.githooks` directory. This will trigger the pre-commit formatting hook to run on git commit.
-```bash
-git config core.hooksPath .githooks
-```
 
 ## Environment Variables
 Following [Twelve-Factor App](https://12factor.net/) principles, Kredd configuration is stored in environment variables.
@@ -88,9 +63,18 @@ The Kredd application requires a number of different services to run. Each one h
 | `worker`   | Background worker service that processes asynchronous jobs (i.e., via RabbitMQ), such as sending emails or handling long-running ML tasks.                                                                |
 | `nginx`    | Frontend web server that serves static assets and acts as a reverse proxy to the API service. In production (when `KREDD_CERTBOT_DOMAIN` is set), automatically obtains a Let's Encrypt certificate and serves traffic over HTTPS on port 443, redirecting HTTP. |
 
+## Development - Git Hooks
+First install [Ruff](https://docs.astral.sh/ruff/):
+```bash
+sudo snap install ruff
+```
 
+Then, configure git to use the `.githooks` directory. This will trigger the pre-commit formatting hook to run on git commit.
+```bash
+git config core.hooksPath .githooks
+```
 
-## Making Migrations
+## Development - Making Migrations
 The simplest way to do this, is to use a Python environment outside of Docker.
 
 1. Create and activate a virtual environment:
