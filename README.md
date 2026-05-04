@@ -1,5 +1,20 @@
 # <img src="https://github.com/DomHudson/kredd/blob/main/frontend/public/favicon.png" height=48 /> Kredd
 
+## How it works
+
+#### Step 1 - Describe what you're looking for
+Tell Kredd what pitches you receive — AI generates smart filter questions automatically.
+<img src="https://github.com/DomHudson/kredd/blob/main/pictures/step-describe-BvboasF5.png?raw=true" height=300 />
+
+#### Step 2 - Share your unique link
+Drop it in your LinkedIn, email signature, or website — anyone can pitch you through it.
+<img src="https://github.com/DomHudson/kredd/blob/main/pictures/step-share-BgtMRjtO.png?raw=true" height=300 />
+
+#### Step 3 - Review ranked submissions
+Every submission is scored, summarized, and surfaced with follow-up suggestions.
+<img src="https://github.com/DomHudson/kredd/blob/main/pictures/step-review-YI7VtQ66.png?raw=true" height=300 />
+
+
 ## Installation Instructions
 1. Install [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/)
 2. Create a `.env` file in the root directory of the repository. This is used to store deployment-specific environment variables. Populate it with the following:
